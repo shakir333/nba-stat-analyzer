@@ -1,11 +1,34 @@
-import pandas as pd #im guessing it transforms pandas into pd
+from nba_api.stats.static import players
+from nba_api.stats.endpoints import playergamelog
 
-from src.stats_engine import compute_averages, compare_players, leaderboard #pulling info from src
+player_name=input('Enter the player name:')
 
-def main():
-    df=pd.read_csv("data/games.csv")
+matches=players.find_players_by_full_name(player_name)
 
-    df["game_date"]=pd.todate(df["game_date"])
+if not matches:
+    print('Player not found')
 
-    print("1-Player Stats")
-    
+else:
+    player=matches[0]
+    player_id=player['id']
+    full_name=player['full_name']
+
+    print(f'\nFound player:{full_name}')
+
+    gamelog=playergamelog.PlayerGameLog(player_id=player_id)
+
+    df=gamelog.get_data_frames()[0]
+
+    print('\nSeason averages')
+
+    print("PPG:", round(df["PTS"].mean(), 2))
+    print("RPG:", round(df["REB"].mean(), 2))
+    print("APG:", round(df["AST"].mean(), 2))
+
+    last5 = df.head(5)
+
+    print("\nLast 5 games")
+
+    print("PPG:", round(last5["PTS"].mean(), 2))
+    print("RPG:", round(last5["REB"].mean(), 2))
+    print("APG:", round(last5["AST"].mean(), 2))

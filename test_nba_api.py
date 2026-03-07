@@ -27,16 +27,30 @@ else:
 
     df=gamelog.get_data_frames()[0]
 
-    print('\nFirst 5 games:')
+    #print(df.columns.tolist())
 
-    print(df[['GAME_DATE','MATCHUP','PTS','REB','AST']].head())
+    print('Season Averages:')
+    print("PPG:  ", round(df["PTS"].mean(), 2))
+    print("RPG:  ", round(df["REB"].mean(), 2))
+    print("APG:  ", round(df["AST"].mean(), 2))
+    print("SPG:  ", round(df["STL"].mean(), 2))
+    print("BPG:  ", round(df["BLK"].mean(), 2))
+    print("FG%:  ", round(df["FG_PCT"].mean() * 100, 1))
+    print("3P%:  ", round(df["FG3_PCT"].mean() * 100, 1))
+    print("TOV:  ", round(df["TOV"].mean(), 2))
 
-    print(f"\n{full_name} averages:")
+    # --- Last 5 Games ---
+    last5 = df.head(5)
+    print('\n--- Last 5 Games ---')
+    print("PPG:  ", round(last5["PTS"].mean(), 2))
+    print("RPG:  ", round(last5["REB"].mean(), 2))
+    print("APG:  ", round(last5["AST"].mean(), 2))
+    print("SPG:  ", round(last5["STL"].mean(), 2))
+    print("BPG:  ", round(last5["BLK"].mean(), 2))
+    print("FG%:  ", round(last5["FG_PCT"].mean() * 100, 1))
+    print("3P%:  ", round(last5["FG3_PCT"].mean() * 100, 1))
+    print("TOV:  ", round(last5["TOV"].mean(), 2))
     
-    print("PPG:", round(df["PTS"].mean(), 2))
-    
-    print("RPG:", round(df["REB"].mean(), 2))
-    
-    print("APG:", round(df["AST"].mean(), 2))
+
 
 
