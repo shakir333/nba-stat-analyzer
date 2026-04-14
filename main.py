@@ -1,34 +1,46 @@
+from compare import compare_players
 from nba_api.stats.static import players
 from nba_api.stats.endpoints import playergamelog
 
-player_name=input('Enter the player name:')
+print('NBA Stats Analyzer')
 
-matches=players.find_players_by_full_name(player_name)
+print('Option 1: look up a players stats.')
 
-if not matches:
-    print('Player not found')
+print('Option 2: compare 2 players stats.')
 
-else:
-    player=matches[0]
-    player_id=player['id']
-    full_name=player['full_name']
+choice=input('Would you like to compare players? Y/N:')
 
-    print(f'\nFound player:{full_name}')
 
-    gamelog=playergamelog.PlayerGameLog(player_id=player_id)
+if choice=='N':
 
-    df=gamelog.get_data_frames()[0]
+    player_name=input('Enter the player name:')
 
-    print('\nSeason averages')
+    matches=players.find_players_by_full_name(player_name)
 
-    print("PPG:", round(df["PTS"].mean(), 2))
-    print("RPG:", round(df["REB"].mean(), 2))
-    print("APG:", round(df["AST"].mean(), 2))
+    if not matches:
+        print('Player not found')
 
-    last5 = df.head(5)
+    else:
+        player=matches[0]
+        player_id=player['id']
+        full_name=player['full_name']
 
-    print("\nLast 5 games")
+        print(f'\nFound player:{full_name}')
 
-    print("PPG:", round(last5["PTS"].mean(), 2))
-    print("RPG:", round(last5["REB"].mean(), 2))
-    print("APG:", round(last5["AST"].mean(), 2))
+        gamelog=playergamelog.PlayerGameLog(player_id=player_id)
+
+        df=gamelog.get_data_frames()[0]
+
+        print('\nSeason averages')
+
+        print("PPG:", round(df["PTS"].mean(), 2))
+        print("RPG:", round(df["REB"].mean(), 2))
+        print("APG:", round(df["AST"].mean(), 2))
+
+        last5 = df.head(5)
+
+        print("\nLast 5 games")
+
+        print("PPG:", round(last5["PTS"].mean(), 2))
+        print("RPG:", round(last5["REB"].mean(), 2))
+        print("APG:", round(last5["AST"].mean(), 2))
