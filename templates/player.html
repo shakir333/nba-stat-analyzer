@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player Stats</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="player-page">
+
+    <a class="back-link" href="/">← Back</a>
+
+    {% if error %}
+        <h2>{{ error }}</h2>
+    {% elif stats %}
+
+        <h1 class="player-title">{{ stats.name }}</h1>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h2>Season Averages</h2>
+                <p>PPG: {{ stats.season.PPG }}</p>
+                <p>RPG: {{ stats.season.RPG }}</p>
+                <p>APG: {{ stats.season.APG }}</p>
+            </div>
+
+            <div class="stat-card">
+                <h2>Last 5 Games</h2>
+                <p>PPG: {{ stats.last5.PPG }}</p>
+                <p>RPG: {{ stats.last5.RPG }}</p>
+                <p>APG: {{ stats.last5.APG }}</p>
+            </div>
+        </div>
+
+    {% endif %}
+
+</body>
+</html>

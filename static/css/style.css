@@ -1,0 +1,133 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #0d0f14;
+    color: white;
+}
+
+a {
+    color: white;
+    text-decoration: none;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 48px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.logo {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.nav-links {
+    display: flex;
+    gap: 24px;
+}
+
+.hero {
+    min-height: 65vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.eyebrow {
+    color: #f5c518;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.hero h1 {
+    font-size: 52px;
+    max-width: 900px;
+    margin: 0 0 16px 0;
+}
+
+.subtext {
+    max-width: 700px;
+    font-size: 18px;
+    color: #c7cbd4;
+    margin-bottom: 28px;
+}
+
+.search-form {
+    display: flex;
+    width: 100%;
+    max-width: 640px;
+    background: #151922;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.search-form input {
+    flex: 1;
+    padding: 18px;
+    font-size: 17px;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: white;
+}
+
+.search-form button {
+    padding: 0 24px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    background: #f5c518;
+    color: black;
+}
+
+.preview-section {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    padding: 0 48px 48px 48px;
+}
+
+.preview-card {
+    background: #151922;
+    border-radius: 14px;
+    padding: 24px;
+}
+
+.preview-card h2 {
+    margin-top: 0;
+}
+
+.player-page {
+    padding: 32px;
+}
+
+.back-link {
+    display: inline-block;
+    margin-bottom: 20px;
+}
+
+.player-title {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.stats-grid {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    flex-wrap: wrap;
+}
+
+.stat-card {
+    width: 280px;
+    padding: 20px;
+    background: #151922;
+    border-radius: 14px;
+}

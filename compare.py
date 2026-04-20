@@ -70,10 +70,3 @@ def compare_players(name1, name2):
         print(f'Overall Winner: {p2["name"]} ({p2_wins}-{p1_wins})')
     else:
         print('Overall Result: Tie')
-
-
-# --- Run it ---
-name1 = input('Enter first player name: ')
-name2 = input('Enter second player name: ')
-
-compare_players(name1, name2)

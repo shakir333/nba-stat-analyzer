@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NBA Player Analytics</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo">NBA Player Analytics</div>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="#">Compare</a>
+            <a href="#">Awards</a>
+        </div>
+    </nav>
+
+    <main class="hero">
+        <p class="eyebrow">Powerful tools for player stats, comparisons, and award tracking</p>
+        <h1>Analyze NBA Players Like Never Before</h1>
+        <p class="subtext">
+            Search players, compare performance, and track award races in one place.
+        </p>
+
+        <form action="/player" method="get" class="search-form">
+            <input type="text" name="name" placeholder="Search for a player..." required>
+            <button type="submit">Search</button>
+        </form>
+    </main>
+
+    <section class="preview-section">
+        <div class="preview-card">
+            <h2>Trending Players</h2>
+            <p>Coming soon</p>
+        </div>
+
+        <div class="preview-card">
+            <h2>Award Race</h2>
+            <p>Coming soon</p>
+        </div>
+
+        <div class="preview-card">
+            <h2>Compare Players</h2>
+            <p>Coming soon</p>
+        </div>
+    </section>
+
+</body>
+</html>
