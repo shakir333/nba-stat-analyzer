@@ -18,6 +18,10 @@ def get_player_stats(player_name):
         "PPG": round(df["PTS"].mean(), 2),
         "RPG": round(df["REB"].mean(), 2),
         "APG": round(df["AST"].mean(), 2),
+        'SPG':  round(df["STL"].mean(), 2),
+        'BPG':  round(df["BLK"].mean(), 2),
+        'FG%':  round(df["FG_PCT"].mean() * 100, 1),
+        '3P%':  round(df["FG3_PCT"].mean() * 100, 1),
     }
 
     last5 = df.head(5)
@@ -26,6 +30,10 @@ def get_player_stats(player_name):
         "PPG": round(last5["PTS"].mean(), 2),
         "RPG": round(last5["REB"].mean(), 2),
         "APG": round(last5["AST"].mean(), 2),
+        'SPG':  round(df["STL"].mean(), 2),
+        'BPG':  round(df["BLK"].mean(), 2),
+        'FG%':  round(df["FG_PCT"].mean() * 100, 1),
+        '3P%':  round(df["FG3_PCT"].mean() * 100, 1),
     }
 
     return {
