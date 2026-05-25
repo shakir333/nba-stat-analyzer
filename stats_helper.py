@@ -1,7 +1,7 @@
 from nba_api.stats.static import players
 from nba_api.stats.endpoints import playergamelog
 
-def get_player_stats(player_name):
+def get_player_stats(player_name, season):
     matches = players.find_players_by_full_name(player_name)
 
     if not matches:
@@ -11,7 +11,7 @@ def get_player_stats(player_name):
     player_id = player["id"]
     full_name = player["full_name"]
 
-    gamelog = playergamelog.PlayerGameLog(player_id=player_id)
+    gamelog = playergamelog.PlayerGameLog(player_id=player_id,season=season)
     df = gamelog.get_data_frames()[0]
 
     season_stats = {
@@ -19,7 +19,7 @@ def get_player_stats(player_name):
         "RPG": round(df["REB"].mean(), 2),
         "APG": round(df["AST"].mean(), 2),
         'SPG':  round(df["STL"].mean(), 2),
-        'BPG':  round(df["BLK"].mean(), 2),
+        'BPG':  round(df["BLK"].mean(), 1),
         'FG%':  round(df["FG_PCT"].mean() * 100, 1),
         '3P%':  round(df["FG3_PCT"].mean() * 100, 1),
     }
@@ -40,4 +40,7 @@ def get_player_stats(player_name):
         "name": full_name,
         "season": season_stats,
         "last5": last5_stats,
+        "season_year": season,
+        "image_url": f"https://cdn.nba.com/headshots/nba/latest/1040x760/{player_id}.png",
+        "season": season_stats,
     }

@@ -3,44 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Player Stats</title>
+    <title>{{ stats.name }} Stats</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
-<body class="player-page">
+<body>
 
-    <a class="back-link" href="/">← Back</a>
+<nav class="navbar">
+    <div class="logo">NBA Player Analytics</div>
+    <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/compare">Compare</a>
+        <a href="/awards">Awards</a>
+    </div>
+</nav>
+
+<main class="player-layout">
 
     {% if error %}
         <h2>{{ error }}</h2>
     {% elif stats %}
 
-        <h1 class="player-title">{{ stats.name }}</h1>
+    <section class="player-dashboard">
 
-        <div class="stats-grid">
-            <div class="stat-card">
-                <h2>Season Averages</h2>
-                <p>PPG: {{ stats.season.PPG }}</p>
-                <p>RPG: {{ stats.season.RPG }}</p>
-                <p>APG: {{ stats.season.APG }}</p>
-                <p>SPG: {{ stats.season.SPG }}</p>
-                <p>BPG: {{ stats.season.BPG }}</p>
-                <p>FG%: {{ stats.season["FG%"] }}</p>
-                <p>3P%: {{ stats.season["3P%"] }}</p>
+        <div class="left-column">
+            <div class="player-face-panel">
+                <img src="{{ stats.image_url }}" alt="{{ stats.name }}" class="player-face">
             </div>
 
-            <div class="stat-card">
-                <h2>Last 5 Games</h2>
-                <p>PPG: {{ stats.last5.PPG }}</p>
-                <p>RPG: {{ stats.last5.RPG }}</p>
-                <p>APG: {{ stats.last5.APG }}</p>
-                <p>SPG: {{ stats.season.SPG }}</p>
-                <p>BPG: {{ stats.season.BPG }}</p>
-                <p>FG%: {{ stats.season["FG%"] }}</p>
-                <p>3P%: {{ stats.season["3P%"] }}</p>
+            <div class="player-stats-panel">
+                <h2>Stats</h2>
+
+                <div class="stats-card-grid">
+                    <div class="mini-stat"><span>PPG</span><strong>{{ stats.season['PPG'] }}</strong></div>
+                    <div class="mini-stat"><span>RPG</span><strong>{{ stats.season['RPG'] }}</strong></div>
+                    <div class="mini-stat"><span>APG</span><strong>{{ stats.season['APG'] }}</strong></div>
+                    <div class="mini-stat"><span>SPG</span><strong>{{ stats.season['SPG'] }}</strong></div>
+                    <div class="mini-stat"><span>BPG</span><strong>{{ stats.season['BPG'] }}</strong></div>
+                    <div class="mini-stat"><span>FG%</span><strong>{{ stats.season['FG%'] }}</strong></div>
+                    <div class="mini-stat"><span>3P%</span><strong>{{ stats.season['3P%'] }}</strong></div>
+                </div>
             </div>
         </div>
 
+        <div class="middle-column">
+            <div class="player-name-area">
+                <p class="eyebrow">Player Profile</p>
+                <h1>{{ stats.name }}</h1>
+
+                <form action="/player" method="get" class="season-tab">
+                    <input type="hidden" name="name" value="{{ stats.name }}">
+
+                    <label for="season">Season</label>
+                    <select name="season" id="season" onchange="this.form.submit()">
+                        {% for season in seasons %}
+                            <option value="{{ season }}" {% if season == stats.season_year %}selected{% endif %}>
+                                {{ season }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </form>
+            </div>
+        </div>
+
+        <div class="right-column">
+            <div class="game-log-panel">
+                <div class="game-log-header">
+                    <h2>Game Log</h2>
+                    <span>{{ stats.season_year }}</span>
+                </div>
+
+                <div class="game-log-list">
+                    <div class="game-log-row">
+                        <div>
+                            <strong>Recent Matchup</strong>
+                            <p>Opponent</p>
+                        </div>
+                        <span>PTS • REB • AST</span>
+                    </div>
+
+                    <div class="game-log-row">
+                        <div>
+                            <strong>Recent Matchup</strong>
+                            <p>Opponent</p>
+                        </div>
+                        <span>PTS • REB • AST</span>
+                    </div>
+
+                    <div class="game-log-row">
+                        <div>
+                            <strong>Recent Matchup</strong>
+                            <p>Opponent</p>
+                        </div>
+                        <span>PTS • REB • AST</span>
+                    </div>
+
+                    <div class="game-log-row">
+                        <div>
+                            <strong>Recent Matchup</strong>
+                            <p>Opponent</p>
+                        </div>
+                        <span>PTS • REB • AST</span>
+                    </div>
+
+                    <div class="game-log-row">
+                        <div>
+                            <strong>Recent Matchup</strong>
+                            <p>Opponent</p>
+                        </div>
+                        <span>PTS • REB • AST</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
     {% endif %}
+
+</main>
 
 </body>
 </html>

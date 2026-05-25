@@ -10,6 +10,8 @@ a {
     text-decoration: none;
 }
 
+/* Navbar */
+
 .navbar {
     display: flex;
     justify-content: space-between;
@@ -28,14 +30,16 @@ a {
     gap: 24px;
 }
 
+/* Home Page */
+
 .hero {
     min-height: 65vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
-    padding: 40px 20px;
-    text-align: center;
+    align-items: flex-start;
+    padding: 40px 64px;
+    text-align: left;
 }
 
 .eyebrow {
@@ -91,43 +95,224 @@ a {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 24px;
-    padding: 0 48px 48px 48px;
+    padding: 0 64px 48px 64px;
 }
 
 .preview-card {
     background: #151922;
     border-radius: 14px;
     padding: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .preview-card h2 {
     margin-top: 0;
 }
 
-.player-page {
-    padding: 32px;
+/* Player Page - 3 Column Layout */
+
+.player-layout {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 32px 24px;
 }
 
-.back-link {
-    display: inline-block;
+.player-dashboard {
+    display: grid;
+    grid-template-columns: 340px 1fr 420px;
+    gap: 20px;
+    align-items: start;
+}
+
+.left-column,
+.middle-column,
+.right-column {
+    min-width: 0;
+}
+
+.player-face-panel,
+.player-stats-panel,
+.game-log-panel {
+    background: #151922;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+    padding: 22px;
+}
+
+.player-face-panel {
+    width: 100%;
+    height: 330px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     margin-bottom: 20px;
 }
 
-.player-title {
-    text-align: center;
-    margin-bottom: 30px;
+.player-face {
+    max-width: 100%;
+    max-height: 300px;
+    object-fit: contain;
 }
 
-.stats-grid {
-    display: flex;
-    justify-content: center;
-    gap: 24px;
-    flex-wrap: wrap;
+.player-stats-panel {
+    width: 100%;
+    min-height: 420px;
+    box-sizing: border-box;
 }
 
-.stat-card {
-    width: 280px;
-    padding: 20px;
-    background: #151922;
+.player-stats-panel h2 {
+    margin-top: 0;
+    margin-bottom: 18px;
+}
+
+.stats-card-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+}
+
+.mini-stat {
+    background: #0f121b;
+    border: 1px solid rgba(255, 255, 255, 0.06);
     border-radius: 14px;
+    padding: 16px;
+}
+
+.mini-stat span {
+    display: block;
+    color: #aab0c0;
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+
+.mini-stat strong {
+    font-size: 28px;
+    color: #f5c518;
+}
+
+.player-name-area {
+    padding-top: 18px;
+}
+
+.player-name-area .eyebrow {
+    margin-bottom: 8px;
+}
+
+.player-name-area h1 {
+    font-size: 38px;
+    margin: 0 0 18px 0;
+    line-height: 1.1;
+}
+
+.season-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: #151922;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 12px 14px;
+}
+
+.season-tab label {
+    color: #aab0c0;
+    font-weight: bold;
+}
+
+.season-tab select {
+    background: #202533;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 15px;
+}
+
+.game-log-panel {
+    height: 770px;
+    box-sizing: border-box;
+}
+
+.game-log-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+}
+
+.game-log-header h2 {
+    margin: 0;
+}
+
+.game-log-header span {
+    color: #f5c518;
+    font-weight: bold;
+}
+
+.game-log-list {
+    max-height: 690px;
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+.game-log-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    background: #0f121b;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 12px;
+}
+
+.game-log-row p {
+    margin: 6px 0 0 0;
+    color: #aab0c0;
+}
+
+.game-log-row span {
+    color: #f5c518;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+/* Mobile */
+
+@media (max-width: 1000px) {
+    .navbar {
+        padding: 18px 24px;
+    }
+
+    .hero {
+        align-items: center;
+        text-align: center;
+        padding: 40px 24px;
+    }
+
+    .preview-section {
+        grid-template-columns: 1fr;
+        padding: 0 24px 40px 24px;
+    }
+
+    .player-dashboard {
+        grid-template-columns: 1fr;
+    }
+
+    .game-log-panel {
+        height: auto;
+    }
+
+    .game-log-list {
+        max-height: 420px;
+    }
+
+    .player-name-area {
+        text-align: center;
+    }
+
+    .player-name-area h1 {
+        font-size: 34px;
+    }
 }
