@@ -3,6 +3,7 @@ from stats_helper import get_player_stats
 
 app = Flask(__name__)
 
+
 SEASONS = [
     "2025-26", "2024-25", "2023-24", "2022-23", "2021-22",
     "2020-21", "2019-20", "2018-19", "2017-18", "2016-17",
@@ -23,18 +24,22 @@ def home():
 @app.route("/player")
 def player():
     player_name = request.args.get("name")
-    season = request.args.get("Season", "2025-26")
+    season = request.args.get("season", "2023-24")
+    stats = get_player_stats(player_name, season)
+
+    print("Selected player:", player_name)
+    print("Selected season:", season)
                               
 
     if not player_name:
         return render_template("player.html", error="No player name entered.", seasons=SEASONS)
 
-    stats = get_player_stats(player_name,season)
+    stats = get_player_stats(player_name, season)
 
     if not stats:
-        return render_template("player.html", error="Player not found.")
+        return render_template("player.html", error="Player not found.", seasons=SEASONS)
 
-    return render_template("player.html", stats=stats)
+    return render_template("player.html", stats=stats, seasons=SEASONS)
 
 
 if __name__ == "__main__":

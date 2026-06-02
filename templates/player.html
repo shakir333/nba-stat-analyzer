@@ -3,7 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ stats.name }} Stats</title>
+
+    {% if stats %}
+        <title>{{ stats.name }} Stats</title>
+    {% else %}
+        <title>Player Not Found</title>
+    {% endif %}
+
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
@@ -20,7 +26,13 @@
 <main class="player-layout">
 
     {% if error %}
-        <h2>{{ error }}</h2>
+
+        <div class="error-card">
+            <h1>{{ error }}</h1>
+            <p>Try searching another player.</p>
+            <a href="/">Back to Search</a>
+        </div>
+
     {% elif stats %}
 
     <section class="player-dashboard">
@@ -47,8 +59,14 @@
 
         <div class="middle-column">
             <div class="player-name-area">
-                <p class="eyebrow">Player Profile</p>
                 <h1>{{ stats.name }}</h1>
+
+                <div class="player-meta">
+                    <img src="{{ stats.team_logo }}" alt="{{ stats.team }}" class="team-logo">
+                    <span class="team-name">{{ stats.team }}</span>
+                    <span>• {{ stats.position }}</span>
+                    <span>• #{{ stats.jersey }}</span>
+                </div>
 
                 <form action="/player" method="get" class="season-tab">
                     <input type="hidden" name="name" value="{{ stats.name }}">
@@ -73,45 +91,16 @@
                 </div>
 
                 <div class="game-log-list">
-                    <div class="game-log-row">
-                        <div>
-                            <strong>Recent Matchup</strong>
-                            <p>Opponent</p>
-                        </div>
-                        <span>PTS • REB • AST</span>
-                    </div>
+                    {% for game in stats.game_log %}
+                        <div class="game-log-row">
+                            <div>
+                                <strong>{{ game.matchup }}</strong>
+                                <p>{{ game.date }} • {{ game.wl }}</p>
+                            </div>
 
-                    <div class="game-log-row">
-                        <div>
-                            <strong>Recent Matchup</strong>
-                            <p>Opponent</p>
+                            <span>{{ game.pts }} PTS • {{ game.reb }} REB • {{ game.ast }} AST</span>
                         </div>
-                        <span>PTS • REB • AST</span>
-                    </div>
-
-                    <div class="game-log-row">
-                        <div>
-                            <strong>Recent Matchup</strong>
-                            <p>Opponent</p>
-                        </div>
-                        <span>PTS • REB • AST</span>
-                    </div>
-
-                    <div class="game-log-row">
-                        <div>
-                            <strong>Recent Matchup</strong>
-                            <p>Opponent</p>
-                        </div>
-                        <span>PTS • REB • AST</span>
-                    </div>
-
-                    <div class="game-log-row">
-                        <div>
-                            <strong>Recent Matchup</strong>
-                            <p>Opponent</p>
-                        </div>
-                        <span>PTS • REB • AST</span>
-                    </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>

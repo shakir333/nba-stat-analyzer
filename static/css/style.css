@@ -316,3 +316,37 @@ a {
         font-size: 34px;
     }
 }
+.error-card {
+    max-width: 500px;
+    margin: 80px auto;
+    background: #151922;
+    border-radius: 18px;
+    padding: 32px;
+    text-align: center;
+}
+
+.error-card a {
+    color: #f5c518;
+    font-weight: bold;
+}
+
+.player-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 22px;
+    margin-bottom: 22px;
+    color: #d8dbe3;
+    flex-wrap: wrap;
+}
+
+.team-logo {
+    width: 34px;
+    height: 34px;
+    object-fit: contain;
+}
+
+.team-name {
+    color: #f5c518;
+    font-weight: bold;
+}
