@@ -1,72 +1,98 @@
 from nba_api.stats.static import players
 from nba_api.stats.endpoints import playergamelog
 
+
 def get_player_stats(player_name):
     matches = players.find_players_by_full_name(player_name)
 
     if not matches:
-        print(f'Player not found: {player_name}')
         return None
 
     player = matches[0]
-    player_id = player['id']
-    full_name = player['full_name']
+    player_id = player["id"]
+    full_name = player["full_name"]
 
-    gamelog = playergamelog.PlayerGameLog(player_id=player_id)
-    df = gamelog.get_data_frames()[0]
+    try:
+        gamelog = playergamelog.PlayerGameLog(player_id=player_id)
+        df = gamelog.get_data_frames()[0]
+    except Exception:
+        return None
+
+    if df.empty:
+        return None
 
     stats = {
-        'name': full_name,
-        'PPG':  round(df["PTS"].mean(), 2),
-        'RPG':  round(df["REB"].mean(), 2),
-        'APG':  round(df["AST"].mean(), 2),
-        'SPG':  round(df["STL"].mean(), 2),
-        'BPG':  round(df["BLK"].mean(), 2),
-        'FG%':  round(df["FG_PCT"].mean() * 100, 1),
-        '3P%':  round(df["FG3_PCT"].mean() * 100, 1),
+        "name": full_name,
+        
+    
+        "PPG": float(round(df["PTS"].mean(), 2)),
+        "RPG": float(round(df["REB"].mean(), 2)),
+        "APG": float(round(df["AST"].mean(), 2)),
+        "SPG": float(round(df["STL"].mean(), 2)),
+        "BPG": float(round(df["BLK"].mean(), 2)),
+        "FG%": float(round(df["FG_PCT"].mean() * 100, 1)),
+        "3P%": float(round(df["FG3_PCT"].mean() * 100, 1)),
+
     }
 
     return stats
 
-def compare_players(name1, name2):
-    print(f'\nFetching {name1}...')
-    p1 = get_player_stats(name1)
 
-    print(f'\nFetching {name2}...')
+def compare_players(name1, name2):
+    p1 = get_player_stats(name1)
     p2 = get_player_stats(name2)
 
-    if not p1 or not p2:
-        print('Comparison could not be completed.')
-        return
+    if p1 is None:
+        return {
+            "success": False,
+            "error": f"Player not found or no games available: {name1}"
+        }
 
-    categories = ['PPG', 'RPG', 'APG', 'SPG', 'BPG', 'FG%', '3P%']
+    if p2 is None:
+        return {
+            "success": False,
+            "error": f"Player not found or no games available: {name2}"
+        }
+
+    categories = ["PPG", "RPG", "APG", "SPG", "BPG", "FG%", "3P%"]
 
     p1_wins = 0
     p2_wins = 0
+    comparison_rows = []
 
-    print(f"\n{'Category':<10} {p1['name']:>20} {p2['name']:>20} {'Winner':<25}")
-    print('-' * 80)
+    for category in categories:
+        p1_value = p1[category]
+        p2_value = p2[category]
 
-    for cat in categories:
-        v1 = p1[cat]
-        v2 = p2[cat]
-
-        if v1 > v2:
-            winner = p1['name']
+        if p1_value > p2_value:
+            category_winner = p1["name"]
             p1_wins += 1
-        elif v2 > v1:
-            winner = p2['name']
+        elif p2_value > p1_value:
+            category_winner = p2["name"]
             p2_wins += 1
         else:
-            winner = 'Tie'
+            category_winner = "Tie"
 
-        print(f'{cat:<10} {v1:>20} {v2:>20} {winner:<25}')
-
-    print('-' * 80)
+        comparison_rows.append({
+            "category": category,
+            "player1_value": p1_value,
+            "player2_value": p2_value,
+            "winner": category_winner
+        })
 
     if p1_wins > p2_wins:
-        print(f'Overall Winner: {p1["name"]} ({p1_wins}-{p2_wins})')
+        overall_winner = p1["name"]
     elif p2_wins > p1_wins:
-        print(f'Overall Winner: {p2["name"]} ({p2_wins}-{p1_wins})')
+        overall_winner = p2["name"]
     else:
-        print('Overall Result: Tie')
+        overall_winner = "Tie"
+
+    return {
+        "success": True,
+        "player1": p1,
+        "player2": p2,
+        "rows": comparison_rows,
+        "player1_wins": p1_wins,
+        "player2_wins": p2_wins,
+        "overall_winner": overall_winner
+    }

@@ -3,36 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>NBA Player Analytics</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
 </head>
+
 <body>
 
     <nav class="navbar">
         <div class="logo">NBA Player Analytics</div>
+
         <div class="nav-links">
-            <a href="/">Home</a>
-            <a href="#">Compare</a>
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('compare') }}">Compare</a>
             <a href="#">Awards</a>
         </div>
     </nav>
 
     <main class="hero">
-        <p class="eyebrow">Website tool for player stats, comparisons, and award tracking</p>
+        <p class="eyebrow">
+            Website tool for player stats, comparisons, and award tracking
+        </p>
+
         <h1>Analyze NBA Players</h1>
+
         <p class="subtext">
             Search players, compare performance, and track award races.
         </p>
 
-        
-        <form action="/player" method="get" class="search-form">
-            <input type="text" name="name" placeholder="Search for a player..." required>
-            <button type="submit">search</button>
-        </form>
+        <form
+            action="{{ url_for('player') }}"
+            method="get"
+            class="search-form"
+        >
+            <input
+                type="text"
+                name="name"
+                placeholder="Search for a player..."
+                required
+            >
 
+            <button type="submit">Search</button>
+        </form>
     </main>
 
     <section class="preview-section">
+
         <div class="preview-card">
             <h2>Trending Players</h2>
             <p>Coming soon</p>
@@ -45,8 +65,16 @@
 
         <div class="preview-card">
             <h2>Compare Players</h2>
-            <p>Coming soon</p>
+
+            <p>
+                Compare two NBA players across major statistical categories.
+            </p>
+
+            <a href="{{ url_for('compare') }}">
+                Compare Players
+            </a>
         </div>
+
     </section>
 
 </body>

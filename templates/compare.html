@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Compare NBA Players</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="logo">NBA Player Analytics</div>
+
+        <div class="nav-links">
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('compare') }}">Compare</a>
+            <a href="#">Awards</a>
+        </div>
+    </nav>
+
+    <main class="compare-layout">
+
+        <section class="compare-header">
+            <p class="eyebrow">Head-to-head player analysis</p>
+            <h1>Compare NBA Players</h1>
+
+            <p class="compare-subtext">
+                Enter two player names to compare their statistical performance.
+            </p>
+        </section>
+
+        <form method="POST" class="compare-form">
+
+            <div class="compare-input-group">
+                <label for="player1">Player 1</label>
+
+                <input
+                    type="text"
+                    id="player1"
+                    name="player1"
+                    placeholder="Example: LeBron James"
+                    required
+                >
+            </div>
+
+            <div class="compare-vs-small">VS</div>
+
+            <div class="compare-input-group">
+                <label for="player2">Player 2</label>
+
+                <input
+                    type="text"
+                    id="player2"
+                    name="player2"
+                    placeholder="Example: Stephen Curry"
+                    required
+                >
+            </div>
+
+            <button type="submit" class="compare-button">
+                Compare Players
+            </button>
+
+        </form>
+
+        {% if error %}
+            <div class="compare-error">
+                <h2>Unable to Compare</h2>
+                <p>{{ error }}</p>
+            </div>
+        {% endif %}
+
+        {% if result %}
+
+            <section class="comparison-results">
+
+                <div class="comparison-score-card">
+
+                    <div class="score-player">
+                        <span class="score-label">Player 1</span>
+                        <h2>{{ result.player1.name }}</h2>
+                        <strong>{{ result.player1_wins }}</strong>
+                    </div>
+
+                    <div class="score-middle">
+                        <span>FINAL SCORE</span>
+                        <div class="score-divider">–</div>
+                    </div>
+
+                    <div class="score-player">
+                        <span class="score-label">Player 2</span>
+                        <h2>{{ result.player2.name }}</h2>
+                        <strong>{{ result.player2_wins }}</strong>
+                    </div>
+
+                </div>
+
+                <div class="overall-winner-card">
+                    <span>Overall Winner</span>
+                    <h2>{{ result.overall_winner }}</h2>
+                </div>
+
+                <div class="comparison-table-card">
+
+                    <div class="comparison-table-header">
+                        <div>Category</div>
+                        <div>{{ result.player1.name }}</div>
+                        <div>{{ result.player2.name }}</div>
+                    </div>
+
+                    {% for row in result.rows %}
+
+                        <div class="comparison-table-row">
+
+                            <div class="comparison-category">
+                                {{ row.category }}
+                            </div>
+
+                            <div
+                                class="comparison-value
+                                {% if row.winner == result.player1.name %}
+                                    winning-value
+                                {% endif %}"
+                            >
+                                {{ row.player1_value }}
+                            </div>
+
+                            <div
+                                class="comparison-value
+                                {% if row.winner == result.player2.name %}
+                                    winning-value
+                                {% endif %}"
+                            >
+                                {{ row.player2_value }}
+                            </div>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            </section>
+
+        {% endif %}
+
+    </main>
+
+</body>
+</html>

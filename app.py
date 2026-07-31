@@ -1,5 +1,7 @@
 from flask import Flask, render_template, request
 from stats_helper import get_player_stats
+from compare import compare_players
+
 
 app = Flask(__name__)
 
@@ -25,21 +27,57 @@ def home():
 def player():
     player_name = request.args.get("name")
     season = request.args.get("season", "2023-24")
-    stats = get_player_stats(player_name, season)
-
-    print("Selected player:", player_name)
-    print("Selected season:", season)
-                              
 
     if not player_name:
-        return render_template("player.html", error="No player name entered.", seasons=SEASONS)
+        return render_template(
+            "player.html",
+            error="No player name entered.",
+            seasons=SEASONS
+        )
 
     stats = get_player_stats(player_name, season)
 
     if not stats:
-        return render_template("player.html", error="Player not found.", seasons=SEASONS)
+        return render_template(
+            "player.html",
+            error="Player not found.",
+            seasons=SEASONS
+        )
 
-    return render_template("player.html", stats=stats, seasons=SEASONS)
+    return render_template(
+        "player.html",
+        stats=stats,
+        seasons=SEASONS
+    )
+
+
+@app.route("/compare", methods=["GET", "POST"])
+def compare():
+    result = None
+    error = None
+
+    if request.method == "POST":
+        player1_name = request.form.get("player1", "").strip()
+        player2_name = request.form.get("player2", "").strip()
+
+        if not player1_name or not player2_name:
+            error = "Please enter both player names."
+
+        elif player1_name.lower() == player2_name.lower():
+            error = "Please enter two different players."
+
+        else:
+            result = compare_players(player1_name, player2_name)
+
+            if not result["success"]:
+                error = result["error"]
+                result = None
+
+    return render_template(
+        "compare.html",
+        result=result,
+        error=error
+    )
 
 
 if __name__ == "__main__":
