@@ -31,7 +31,7 @@
             <h1>Compare NBA Players</h1>
 
             <p class="compare-subtext">
-                Enter two player names to compare their statistical performance.
+                Compare two players or one player across different seasons.
             </p>
         </section>
 
@@ -44,9 +44,27 @@
                     type="text"
                     id="player1"
                     name="player1"
+                    value="{{ player1_name }}"
                     placeholder="Example: LeBron James"
                     required
                 >
+
+                <label for="player1-season">Season</label>
+
+                <select
+                    id="player1-season"
+                    name="player1_season"
+                    class="compare-season-select"
+                >
+                    {% for season in seasons %}
+                        <option
+                            value="{{ season }}"
+                            {% if season == player1_season %}selected{% endif %}
+                        >
+                            {{ season }}
+                        </option>
+                    {% endfor %}
+                </select>
             </div>
 
             <div class="compare-vs-small">VS</div>
@@ -58,9 +76,27 @@
                     type="text"
                     id="player2"
                     name="player2"
+                    value="{{ player2_name }}"
                     placeholder="Example: Stephen Curry"
                     required
                 >
+
+                <label for="player2-season">Season</label>
+
+                <select
+                    id="player2-season"
+                    name="player2_season"
+                    class="compare-season-select"
+                >
+                    {% for season in seasons %}
+                        <option
+                            value="{{ season }}"
+                            {% if season == player2_season %}selected{% endif %}
+                        >
+                            {{ season }}
+                        </option>
+                    {% endfor %}
+                </select>
             </div>
 
             <button type="submit" class="compare-button">
@@ -83,7 +119,10 @@
                 <div class="comparison-score-card">
 
                     <div class="score-player">
-                        <span class="score-label">Player 1</span>
+                        <span class="score-label">
+                            {{ result.player1.season }}
+                        </span>
+
                         <h2>{{ result.player1.name }}</h2>
                         <strong>{{ result.player1_wins }}</strong>
                     </div>
@@ -94,7 +133,10 @@
                     </div>
 
                     <div class="score-player">
-                        <span class="score-label">Player 2</span>
+                        <span class="score-label">
+                            {{ result.player2.season }}
+                        </span>
+
                         <h2>{{ result.player2.name }}</h2>
                         <strong>{{ result.player2_wins }}</strong>
                     </div>
@@ -103,15 +145,34 @@
 
                 <div class="overall-winner-card">
                     <span>Overall Winner</span>
-                    <h2>{{ result.overall_winner }}</h2>
+
+                    <h2>
+                        {% if result.overall_winner == "player1" %}
+                            {{ result.player1.name }}
+                            ({{ result.player1.season }})
+                        {% elif result.overall_winner == "player2" %}
+                            {{ result.player2.name }}
+                            ({{ result.player2.season }})
+                        {% else %}
+                            Tie
+                        {% endif %}
+                    </h2>
                 </div>
 
                 <div class="comparison-table-card">
 
                     <div class="comparison-table-header">
                         <div>Category</div>
-                        <div>{{ result.player1.name }}</div>
-                        <div>{{ result.player2.name }}</div>
+
+                        <div>
+                            {{ result.player1.name }}<br>
+                            {{ result.player1.season }}
+                        </div>
+
+                        <div>
+                            {{ result.player2.name }}<br>
+                            {{ result.player2.season }}
+                        </div>
                     </div>
 
                     {% for row in result.rows %}
@@ -124,7 +185,7 @@
 
                             <div
                                 class="comparison-value
-                                {% if row.winner == result.player1.name %}
+                                {% if row.winner == 'player1' %}
                                     winning-value
                                 {% endif %}"
                             >
@@ -133,7 +194,7 @@
 
                             <div
                                 class="comparison-value
-                                {% if row.winner == result.player2.name %}
+                                {% if row.winner == 'player2' %}
                                     winning-value
                                 {% endif %}"
                             >

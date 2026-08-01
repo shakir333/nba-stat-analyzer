@@ -56,18 +56,41 @@ def compare():
     result = None
     error = None
 
+    player1_name = ""
+    player2_name = ""
+    player1_season = "2025-26"
+    player2_season = "2025-26"
+
     if request.method == "POST":
         player1_name = request.form.get("player1", "").strip()
         player2_name = request.form.get("player2", "").strip()
 
+        player1_season = request.form.get(
+            "player1_season",
+            "2025-26"
+        )
+
+        player2_season = request.form.get(
+            "player2_season",
+            "2025-26"
+        )
+
         if not player1_name or not player2_name:
             error = "Please enter both player names."
 
-        elif player1_name.lower() == player2_name.lower():
-            error = "Please enter two different players."
+        elif (
+            player1_name.lower() == player2_name.lower()
+            and player1_season == player2_season
+        ):
+            error = "Please choose different players or different seasons."
 
         else:
-            result = compare_players(player1_name, player2_name)
+            result = compare_players(
+                player1_name,
+                player1_season,
+                player2_name,
+                player2_season
+            )
 
             if not result["success"]:
                 error = result["error"]
@@ -76,7 +99,12 @@ def compare():
     return render_template(
         "compare.html",
         result=result,
-        error=error
+        error=error,
+        seasons=SEASONS,
+        player1_name=player1_name,
+        player2_name=player2_name,
+        player1_season=player1_season,
+        player2_season=player2_season
     )
 
 

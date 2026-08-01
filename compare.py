@@ -2,7 +2,7 @@ from nba_api.stats.static import players
 from nba_api.stats.endpoints import playergamelog
 
 
-def get_player_stats(player_name):
+def get_player_stats(player_name, season):
     matches = players.find_players_by_full_name(player_name)
 
     if not matches:
@@ -13,7 +13,10 @@ def get_player_stats(player_name):
     full_name = player["full_name"]
 
     try:
-        gamelog = playergamelog.PlayerGameLog(player_id=player_id)
+        gamelog = playergamelog.PlayerGameLog(
+            player_id=player_id,
+            season=season
+        )
         df = gamelog.get_data_frames()[0]
     except Exception:
         return None
@@ -23,35 +26,39 @@ def get_player_stats(player_name):
 
     stats = {
         "name": full_name,
-        
-    
+        "season": season,
         "PPG": float(round(df["PTS"].mean(), 2)),
         "RPG": float(round(df["REB"].mean(), 2)),
         "APG": float(round(df["AST"].mean(), 2)),
         "SPG": float(round(df["STL"].mean(), 2)),
         "BPG": float(round(df["BLK"].mean(), 2)),
         "FG%": float(round(df["FG_PCT"].mean() * 100, 1)),
-        "3P%": float(round(df["FG3_PCT"].mean() * 100, 1)),
-
+        "3P%": float(round(df["FG3_PCT"].mean() * 100, 1))
     }
 
     return stats
 
 
-def compare_players(name1, name2):
-    p1 = get_player_stats(name1)
-    p2 = get_player_stats(name2)
+def compare_players(name1, season1, name2, season2):
+    p1 = get_player_stats(name1, season1)
+    p2 = get_player_stats(name2, season2)
 
     if p1 is None:
         return {
             "success": False,
-            "error": f"Player not found or no games available: {name1}"
+            "error": (
+                f"Player not found or no games available: "
+                f"{name1} ({season1})"
+            )
         }
 
     if p2 is None:
         return {
             "success": False,
-            "error": f"Player not found or no games available: {name2}"
+            "error": (
+                f"Player not found or no games available: "
+                f"{name2} ({season2})"
+            )
         }
 
     categories = ["PPG", "RPG", "APG", "SPG", "BPG", "FG%", "3P%"]
@@ -65,13 +72,13 @@ def compare_players(name1, name2):
         p2_value = p2[category]
 
         if p1_value > p2_value:
-            category_winner = p1["name"]
+            category_winner = "player1"
             p1_wins += 1
         elif p2_value > p1_value:
-            category_winner = p2["name"]
+            category_winner = "player2"
             p2_wins += 1
         else:
-            category_winner = "Tie"
+            category_winner = "tie"
 
         comparison_rows.append({
             "category": category,
@@ -81,11 +88,11 @@ def compare_players(name1, name2):
         })
 
     if p1_wins > p2_wins:
-        overall_winner = p1["name"]
+        overall_winner = "player1"
     elif p2_wins > p1_wins:
-        overall_winner = p2["name"]
+        overall_winner = "player2"
     else:
-        overall_winner = "Tie"
+        overall_winner = "tie"
 
     return {
         "success": True,

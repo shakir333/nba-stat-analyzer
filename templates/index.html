@@ -63,17 +63,13 @@
             <p>Coming soon</p>
         </div>
 
-        <div class="preview-card">
-            <h2>Compare Players</h2>
-
-            <p>
-                Compare two NBA players across major statistical categories.
-            </p>
-
-            <a href="{{ url_for('compare') }}">
-                Compare Players
-            </a>
-        </div>
+        <section class="preview-section single-preview">
+    <a href="{{ url_for('compare') }}" class="preview-card clickable-card">
+        <h2>Compare Players</h2>
+        <p>Compare two NBA players across major statistical categories.</p>
+        <span class="preview-link">Open Compare →</span>
+    </a>
+</section>
 
     </section>
 
