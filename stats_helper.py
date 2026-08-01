@@ -29,6 +29,7 @@ def get_player_stats(player_name, season):
         player_id=player_id,
         season=season,
         season_type_all_star="Regular Season"
+        timeout=8
     )
 
     df = gamelog.get_data_frames()[0]

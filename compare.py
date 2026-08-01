@@ -16,6 +16,7 @@ def get_player_stats(player_name, season):
         gamelog = playergamelog.PlayerGameLog(
             player_id=player_id,
             season=season
+            timeout=8
         )
         df = gamelog.get_data_frames()[0]
     except Exception:
