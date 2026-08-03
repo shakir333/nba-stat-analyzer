@@ -4,6 +4,7 @@ from compare import compare_players
 from stats_helper import (
     get_available_seasons,
     get_player_stats,
+    get_standings,
     get_team,
     get_teams,
 )
@@ -86,6 +87,17 @@ def compare():
 @app.route("/teams")
 def teams():
     return render_template("teams.html", teams=get_teams())
+
+
+@app.route("/standings")
+def standings():
+    standings_data = get_standings(request.args.get("season"))
+    if standings_data is None:
+        return render_template(
+            "standings.html",
+            error="Standings data has not been imported yet.",
+        )
+    return render_template("standings.html", **standings_data)
 
 
 @app.route("/teams/<abbreviation>")

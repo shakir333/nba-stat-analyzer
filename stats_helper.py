@@ -148,6 +148,46 @@ def get_teams():
     return [dict(row) for row in rows]
 
 
+def get_standings(season=None):
+    connection = _connect()
+    if connection is None:
+        return None
+
+    with connection:
+        table_exists = connection.execute(
+            "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'team_seasons'"
+        ).fetchone()
+        if table_exists is None:
+            return None
+
+        seasons = [
+            row["season"]
+            for row in connection.execute(
+                "SELECT DISTINCT season FROM team_seasons ORDER BY season DESC"
+            ).fetchall()
+        ]
+        if not seasons:
+            return None
+        selected_season = season if season in seasons else seasons[0]
+        rows = connection.execute(
+            """
+            SELECT ts.*, t.abbreviation
+            FROM team_seasons AS ts
+            JOIN teams AS t ON t.team_id = ts.team_id
+            WHERE ts.season = ?
+            ORDER BY ts.conference, ts.conference_rank
+            """,
+            (selected_season,),
+        ).fetchall()
+
+    return {
+        "season": selected_season,
+        "seasons": seasons,
+        "east": [dict(row) for row in rows if row["conference"] == "East"],
+        "west": [dict(row) for row in rows if row["conference"] == "West"],
+    }
+
+
 def get_team(abbreviation):
     connection = _connect()
     if connection is None:

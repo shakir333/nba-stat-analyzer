@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NBA Standings</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<nav class="navbar">
+    <a class="logo" href="/">NBA Player Analytics</a>
+    <div class="nav-links"><a href="/">Home</a><a href="/compare">Compare</a><a href="/teams">Teams</a><a href="/standings">Standings</a></div>
+</nav>
+<main class="standings-layout">
+    <header class="standings-header">
+        <div><p class="eyebrow">LEAGUE TABLE</p><h1>NBA Standings</h1><p>Final regular-season records and conference seeding.</p></div>
+        {% if seasons %}
+        <form method="get">
+            <label for="season">Season</label>
+            <select id="season" name="season" onchange="this.form.submit()">
+                {% for option in seasons %}<option value="{{ option }}" {% if option == season %}selected{% endif %}>{{ option }}</option>{% endfor %}
+            </select>
+        </form>
+        {% endif %}
+    </header>
+
+    {% if error %}
+    <section class="standings-error"><h2>Standings unavailable</h2><p>{{ error }}</p><p>Run <code>py update_data.py</code>, then reload this page.</p></section>
+    {% else %}
+    <div class="conference-grid">
+        {% for conference_name, teams in [('Eastern Conference', east), ('Western Conference', west)] %}
+        <section class="conference-card">
+            <h2>{{ conference_name }}</h2>
+            <div class="standings-table">
+                <div class="standings-row standings-labels"><span>Seed</span><span>Team</span><span>W</span><span>L</span><span>PCT</span></div>
+                {% for team in teams %}
+                <a class="standings-row" href="{{ url_for('team', abbreviation=team.abbreviation) }}">
+                    <strong>{{ team.conference_rank }}</strong>
+                    <span class="standings-team"><img src="https://cdn.nba.com/logos/nba/{{ team.team_id }}/global/L/logo.svg" alt=""><span>{{ team.team_name }}</span></span>
+                    <span>{{ team.wins }}</span><span>{{ team.losses }}</span><span>{{ '%.3f'|format(team.win_percentage) }}</span>
+                </a>
+                {% endfor %}
+            </div>
+        </section>
+        {% endfor %}
+    </div>
+    {% endif %}
+</main>
+</body>
+</html>

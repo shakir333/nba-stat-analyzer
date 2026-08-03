@@ -5,7 +5,7 @@
     <title>{{ team.full_name }} Roster</title><link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-<nav class="navbar"><a class="logo" href="/">NBA Player Analytics</a><div class="nav-links"><a href="/">Home</a><a href="/compare">Compare</a><a href="/teams">Teams</a></div></nav>
+<nav class="navbar"><a class="logo" href="/">NBA Player Analytics</a><div class="nav-links"><a href="/">Home</a><a href="/compare">Compare</a><a href="/teams">Teams</a><a href="/standings">Standings</a></div></nav>
 <main class="directory-layout">
     <header class="team-header"><img src="https://cdn.nba.com/logos/nba/{{ team.team_id }}/global/L/logo.svg" alt="{{ team.full_name }} logo"><div><a class="back-link" href="/teams">← All teams</a><h1>{{ team.full_name }}</h1><p>Current stored roster</p></div></header>
     <section class="roster-grid">

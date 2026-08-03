@@ -1,6 +1,7 @@
 import argparse
 import csv
 import sqlite3
+import time
 from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
@@ -13,6 +14,7 @@ DEFAULT_SEASONS = [
     "2016-17", "2017-18", "2018-19", "2019-20", "2020-21",
     "2021-22", "2022-23", "2023-24", "2024-25", "2025-26",
 ]
+STANDINGS_FILENAME = "LeagueStandings.csv"
 
 
 def season_for_date(date_text):
@@ -26,6 +28,13 @@ def integer(value):
         return int(float(value))
     except (TypeError, ValueError):
         return 0
+
+
+def decimal(value):
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return 0.0
 
 
 def position_for(player):
@@ -46,6 +55,7 @@ def create_database(connection):
 
         DROP TABLE IF EXISTS game_logs;
         DROP TABLE IF EXISTS player_seasons;
+        DROP TABLE IF EXISTS team_seasons;
         DROP TABLE IF EXISTS players;
         DROP TABLE IF EXISTS teams;
         DROP TABLE IF EXISTS metadata;
@@ -78,6 +88,23 @@ def create_database(connection):
             FOREIGN KEY (player_id) REFERENCES players(player_id)
         );
 
+        CREATE TABLE team_seasons (
+            team_id INTEGER NOT NULL,
+            season TEXT NOT NULL,
+            team_name TEXT NOT NULL,
+            conference TEXT NOT NULL,
+            conference_rank INTEGER NOT NULL,
+            wins INTEGER NOT NULL,
+            losses INTEGER NOT NULL,
+            win_percentage REAL NOT NULL,
+            home_record TEXT,
+            road_record TEXT,
+            conference_record TEXT,
+            streak TEXT,
+            PRIMARY KEY (team_id, season),
+            FOREIGN KEY (team_id) REFERENCES teams(team_id)
+        );
+
         CREATE TABLE game_logs (
             player_id INTEGER NOT NULL,
             season TEXT NOT NULL,
@@ -107,8 +134,86 @@ def create_database(connection):
         CREATE INDEX idx_players_name ON players(full_name COLLATE NOCASE);
         CREATE INDEX idx_games_season_player ON game_logs(season, player_id);
         CREATE INDEX idx_player_seasons_team ON player_seasons(season, team_id);
+        CREATE INDEX idx_team_seasons_conference
+            ON team_seasons(season, conference, conference_rank);
         """
     )
+
+
+def download_standings(seasons, output_path):
+    try:
+        from nba_api.stats.endpoints import leaguestandingsv3
+    except ImportError as error:
+        raise RuntimeError(
+            "nba_api is required to download standings. Run: py -m pip install nba_api"
+        ) from error
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    rows = []
+    for index, season in enumerate(sorted(seasons)):
+        print(f"Downloading official {season} standings...")
+        frame = leaguestandingsv3.LeagueStandingsV3(
+            season=season,
+            season_type="Regular Season",
+            timeout=60,
+        ).get_data_frames()[0]
+        if len(frame.index) != 30:
+            raise RuntimeError(
+                f"Expected 30 teams for {season}, but NBA.com returned {len(frame.index)}."
+            )
+        for record in frame.to_dict("records"):
+            rows.append({"season": season, **record})
+        if index < len(seasons) - 1:
+            time.sleep(1)
+
+    # The 2019-20 bubble standings include extra seeding-game fields that are
+    # absent from normal seasons, so collect the columns from every row.
+    fieldnames = list(dict.fromkeys(key for row in rows for key in row))
+    with output_path.open("w", encoding="utf-8", newline="") as file:
+        writer = csv.DictWriter(file, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(rows)
+    return len(rows)
+
+
+def import_standings(connection, path, selected_seasons):
+    rows = []
+    with path.open(encoding="utf-8-sig", newline="") as file:
+        for row in csv.DictReader(file):
+            season = row.get("season", "").strip()
+            if season not in selected_seasons:
+                continue
+            team_name = (
+                f"{row.get('TeamCity', '').strip()} {row.get('TeamName', '').strip()}"
+            ).strip()
+            rows.append(
+                (
+                    integer(row.get("TeamID")), season, team_name,
+                    row.get("Conference", "").strip(), integer(row.get("PlayoffRank")),
+                    integer(row.get("WINS")), integer(row.get("LOSSES")),
+                    decimal(row.get("WinPCT")), row.get("HOME", "").strip(),
+                    row.get("ROAD", "").strip(), row.get("ConferenceRecord", "").strip(),
+                    row.get("strCurrentStreak", "").strip(),
+                )
+            )
+
+    expected = len(selected_seasons) * 30
+    if len(rows) != expected:
+        raise RuntimeError(
+            f"Expected {expected} standings rows, but found {len(rows)} in {path}. "
+            "Delete the cached file and rerun to download it again."
+        )
+    connection.executemany(
+        """
+        INSERT INTO team_seasons (
+            team_id, season, team_name, conference, conference_rank,
+            wins, losses, win_percentage, home_record, road_record,
+            conference_record, streak
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """,
+        rows,
+    )
+    return len(rows)
 
 
 def load_player_bios(path):
@@ -207,27 +312,22 @@ def import_player_statistics(connection, path, selected_seasons, bios):
 
 def save_season_metadata(connection, season_teams, bios, team_history):
     latest_season = max(season for _, season in season_teams)
-
     teams_by_name = {
         f"{team['teamCity']} {team['teamName']}".strip().casefold(): (team_id, team)
         for team_id, team in team_history.items()
     }
-
     rows = []
-
     for (player_id, season), team_counts in season_teams.items():
         (team_id, team_name), _ = max(team_counts.items(), key=lambda item: item[1])
-        
         team = team_history.get(team_id, {})
 
+        # Kaggle's PlayerStatistics.csv has blank playerteamId values for most
+        # 2021-22 rows. The city and team name are still present, so recover
+        # the official NBA team ID from TeamHistories.csv when needed.
         if not team:
-            team_id, team = teams_by_name.get(
-                team_name.casefold(),
-                (0, {})
-            )
+            team_id, team = teams_by_name.get(team_name.casefold(), (0, {}))
 
         abbreviation = team.get("teamAbbrev", "").strip()
-
         rows.append(
             (
                 player_id, season, team_id, team_name, abbreviation,
@@ -272,6 +372,10 @@ def main():
             "seasons are included. Example: 2024-25 2025-26"
         ),
     )
+    parser.add_argument(
+        "--refresh-standings", action="store_true",
+        help="Download standings again even if LeagueStandings.csv already exists",
+    )
     args = parser.parse_args()
 
     required = {
@@ -284,6 +388,13 @@ def main():
         parser.error(f"Missing CSV files in {args.source}: {', '.join(missing)}")
 
     selected = set(args.seasons)
+    standings_path = args.source / STANDINGS_FILENAME
+    if args.refresh_standings or not standings_path.exists():
+        downloaded = download_standings(selected, standings_path)
+        print(f"Saved {downloaded} standings rows to {standings_path}")
+    else:
+        print(f"Using cached standings from {standings_path}")
+
     season_start = max(int(season[:4]) for season in selected)
     print(f"Reading player biographies and team history...")
     bios = load_player_bios(required["Players.csv"])
@@ -303,11 +414,12 @@ def main():
             raise RuntimeError("No matching games were found. Check the season values.")
         save_season_metadata(connection, season_teams, bios, teams)
         save_teams(connection, teams)
+        standings_count = import_standings(connection, standings_path, selected)
         connection.executemany(
             "INSERT INTO metadata (key, value) VALUES (?, ?)",
             [
                 ("last_updated", datetime.now(timezone.utc).isoformat()),
-                ("source", "Kaggle: Historical NBA Data and Player Box Scores"),
+                ("source", "Kaggle player data; NBA.com LeagueStandingsV3 standings"),
                 ("seasons", ",".join(sorted(selected))),
             ],
         )
@@ -315,7 +427,10 @@ def main():
         connection.execute("VACUUM")
 
     temporary_path.replace(DATABASE_PATH)
-    print(f"Stored {player_count:,} players and {game_count:,} regular-season game rows.")
+    print(
+        f"Stored {player_count:,} players, {game_count:,} regular-season game rows, "
+        f"and {standings_count:,} standings rows."
+    )
     print(f"Database updated at {DATABASE_PATH}")
 
 
