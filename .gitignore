@@ -1,7 +1,8 @@
 __pycache__/
 *.py[cod]
-*.pyo
-*.pyd
 .python-version
 .vscode/
 .env
+kaggle_data/
+*.building.db
+CSV Data Files/

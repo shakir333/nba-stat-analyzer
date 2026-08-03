@@ -19,7 +19,7 @@
     <div class="nav-links">
         <a href="/">Home</a>
         <a href="/compare">Compare</a>
-        <a href="/awards">Awards</a>
+        <a href="/teams">Teams</a>
     </div>
 </nav>
 
@@ -62,7 +62,7 @@
                 <h1>{{ stats.name }}</h1>
 
                 <div class="player-meta">
-                    <img src="{{ stats.team_logo }}" alt="{{ stats.team }}" class="team-logo">
+                    {% if stats.team_logo %}<img src="{{ stats.team_logo }}" alt="{{ stats.team }}" class="team-logo">{% endif %}
                     <span class="team-name">{{ stats.team }}</span>
                     <span>• {{ stats.position }}</span>
                     <span>• #{{ stats.jersey }}</span>

@@ -3,215 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Compare NBA Players</title>
-
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='css/style.css') }}"
-    >
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
-
 <body>
-
-    <nav class="navbar">
-        <div class="logo">NBA Player Analytics</div>
-
-        <div class="nav-links">
-            <a href="{{ url_for('home') }}">Home</a>
-            <a href="{{ url_for('compare') }}">Compare</a>
-            <a href="#">Awards</a>
+<nav class="navbar">
+    <a class="logo" href="/">NBA Player Analytics</a>
+    <div class="nav-links"><a href="/">Home</a><a href="/compare">Compare</a><a href="/teams">Teams</a></div>
+</nav>
+<main class="compare-layout">
+    <header class="compare-header"><h1>Player Comparison</h1><p class="compare-subtext">Choose two players and seasons.</p></header>
+    <form class="compare-form" method="post">
+        <div class="compare-input-group">
+            <label for="player1">Player 1</label>
+            <input id="player1" name="player1" value="{{ player1_name }}" placeholder="LeBron James" required>
+            <select class="compare-season-select" name="player1_season">
+                {% for season in seasons %}<option value="{{ season }}" {% if season == player1_season %}selected{% endif %}>{{ season }}</option>{% endfor %}
+            </select>
         </div>
-    </nav>
-
-    <main class="compare-layout">
-
-        <section class="compare-header">
-            <p class="eyebrow">Head-to-head player analysis</p>
-            <h1>Compare NBA Players</h1>
-
-            <p class="compare-subtext">
-                Compare two players or one player across different seasons.
-            </p>
-        </section>
-
-        <form method="POST" class="compare-form">
-
-            <div class="compare-input-group">
-                <label for="player1">Player 1</label>
-
-                <input
-                    type="text"
-                    id="player1"
-                    name="player1"
-                    value="{{ player1_name }}"
-                    placeholder="Example: LeBron James"
-                    required
-                >
-
-                <label for="player1-season">Season</label>
-
-                <select
-                    id="player1-season"
-                    name="player1_season"
-                    class="compare-season-select"
-                >
-                    {% for season in seasons %}
-                        <option
-                            value="{{ season }}"
-                            {% if season == player1_season %}selected{% endif %}
-                        >
-                            {{ season }}
-                        </option>
-                    {% endfor %}
-                </select>
+        <span class="compare-vs-small">VS</span>
+        <div class="compare-input-group">
+            <label for="player2">Player 2</label>
+            <input id="player2" name="player2" value="{{ player2_name }}" placeholder="Stephen Curry" required>
+            <select class="compare-season-select" name="player2_season">
+                {% for season in seasons %}<option value="{{ season }}" {% if season == player2_season %}selected{% endif %}>{{ season }}</option>{% endfor %}
+            </select>
+        </div>
+        <button class="compare-button" type="submit">Compare</button>
+    </form>
+    {% if error %}<section class="compare-error"><h2>Comparison unavailable</h2><p>{{ error }}</p></section>{% endif %}
+    {% if result %}
+    <section class="comparison-results">
+        <div class="comparison-score-card">
+            <div class="score-player"><span class="score-label">{{ result.player1.season }}</span><h2>{{ result.player1.name }}</h2><strong>{{ result.player1_wins }}</strong></div>
+            <div class="score-middle"><span>FINAL</span><div class="score-divider">–</div></div>
+            <div class="score-player"><span class="score-label">{{ result.player2.season }}</span><h2>{{ result.player2.name }}</h2><strong>{{ result.player2_wins }}</strong></div>
+        </div>
+        <div class="overall-winner-card"><span>Overall result</span><h2>{% if result.overall_winner == 'player1' %}{{ result.player1.name }} wins{% elif result.overall_winner == 'player2' %}{{ result.player2.name }} wins{% else %}Tie{% endif %}</h2></div>
+        <div class="comparison-table-card">
+            <div class="comparison-table-header"><div>Category</div><div>{{ result.player1.name }}</div><div>{{ result.player2.name }}</div></div>
+            {% for row in result.rows %}
+            <div class="comparison-table-row">
+                <div class="comparison-category">{{ row.category }}</div>
+                <div class="comparison-value {% if row.winner == 'player1' %}winning-value{% endif %}">{{ row.player1_value }}</div>
+                <div class="comparison-value {% if row.winner == 'player2' %}winning-value{% endif %}">{{ row.player2_value }}</div>
             </div>
-
-            <div class="compare-vs-small">VS</div>
-
-            <div class="compare-input-group">
-                <label for="player2">Player 2</label>
-
-                <input
-                    type="text"
-                    id="player2"
-                    name="player2"
-                    value="{{ player2_name }}"
-                    placeholder="Example: Stephen Curry"
-                    required
-                >
-
-                <label for="player2-season">Season</label>
-
-                <select
-                    id="player2-season"
-                    name="player2_season"
-                    class="compare-season-select"
-                >
-                    {% for season in seasons %}
-                        <option
-                            value="{{ season }}"
-                            {% if season == player2_season %}selected{% endif %}
-                        >
-                            {{ season }}
-                        </option>
-                    {% endfor %}
-                </select>
-            </div>
-
-            <button type="submit" class="compare-button">
-                Compare Players
-            </button>
-
-        </form>
-
-        {% if error %}
-            <div class="compare-error">
-                <h2>Unable to Compare</h2>
-                <p>{{ error }}</p>
-            </div>
-        {% endif %}
-
-        {% if result %}
-
-            <section class="comparison-results">
-
-                <div class="comparison-score-card">
-
-                    <div class="score-player">
-                        <span class="score-label">
-                            {{ result.player1.season }}
-                        </span>
-
-                        <h2>{{ result.player1.name }}</h2>
-                        <strong>{{ result.player1_wins }}</strong>
-                    </div>
-
-                    <div class="score-middle">
-                        <span>FINAL SCORE</span>
-                        <div class="score-divider">–</div>
-                    </div>
-
-                    <div class="score-player">
-                        <span class="score-label">
-                            {{ result.player2.season }}
-                        </span>
-
-                        <h2>{{ result.player2.name }}</h2>
-                        <strong>{{ result.player2_wins }}</strong>
-                    </div>
-
-                </div>
-
-                <div class="overall-winner-card">
-                    <span>Overall Winner</span>
-
-                    <h2>
-                        {% if result.overall_winner == "player1" %}
-                            {{ result.player1.name }}
-                            ({{ result.player1.season }})
-                        {% elif result.overall_winner == "player2" %}
-                            {{ result.player2.name }}
-                            ({{ result.player2.season }})
-                        {% else %}
-                            Tie
-                        {% endif %}
-                    </h2>
-                </div>
-
-                <div class="comparison-table-card">
-
-                    <div class="comparison-table-header">
-                        <div>Category</div>
-
-                        <div>
-                            {{ result.player1.name }}<br>
-                            {{ result.player1.season }}
-                        </div>
-
-                        <div>
-                            {{ result.player2.name }}<br>
-                            {{ result.player2.season }}
-                        </div>
-                    </div>
-
-                    {% for row in result.rows %}
-
-                        <div class="comparison-table-row">
-
-                            <div class="comparison-category">
-                                {{ row.category }}
-                            </div>
-
-                            <div
-                                class="comparison-value
-                                {% if row.winner == 'player1' %}
-                                    winning-value
-                                {% endif %}"
-                            >
-                                {{ row.player1_value }}
-                            </div>
-
-                            <div
-                                class="comparison-value
-                                {% if row.winner == 'player2' %}
-                                    winning-value
-                                {% endif %}"
-                            >
-                                {{ row.player2_value }}
-                            </div>
-
-                        </div>
-
-                    {% endfor %}
-
-                </div>
-
-            </section>
-
-        {% endif %}
-
-    </main>
-
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+</main>
 </body>
 </html>

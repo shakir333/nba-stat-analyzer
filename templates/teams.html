@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NBA Teams</title><link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<nav class="navbar"><a class="logo" href="/">NBA Player Analytics</a><div class="nav-links"><a href="/">Home</a><a href="/compare">Compare</a><a href="/teams">Teams</a></div></nav>
+<main class="directory-layout">
+    <header class="directory-header"><p class="eyebrow">THE LEAGUE</p><h1>NBA Teams</h1><p>Choose a team to view its current stored roster.</p></header>
+    <section class="teams-grid">
+        {% for team in teams %}
+        <a class="team-card" href="{{ url_for('team', abbreviation=team.abbreviation) }}">
+            <img src="https://cdn.nba.com/logos/nba/{{ team.team_id }}/global/L/logo.svg" alt="{{ team.full_name }} logo">
+            <div><h2>{{ team.full_name }}</h2><span>{{ team.abbreviation }}</span></div>
+        </a>
+        {% endfor %}
+    </section>
+</main>
+</body>
+</html>

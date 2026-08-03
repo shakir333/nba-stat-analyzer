@@ -3,75 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>NBA Player Analytics</title>
-
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='css/style.css') }}"
-    >
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
-
 <body>
-
-    <nav class="navbar">
-        <div class="logo">NBA Player Analytics</div>
-
-        <div class="nav-links">
-            <a href="{{ url_for('home') }}">Home</a>
-            <a href="{{ url_for('compare') }}">Compare</a>
-            <a href="#">Awards</a>
-        </div>
-    </nav>
-
-    <main class="hero">
-        <p class="eyebrow">
-            Website tool for player stats, comparisons, and award tracking
-        </p>
-
-        <h1>Analyze NBA Players</h1>
-
-        <p class="subtext">
-            Search players, compare performance, and track award races.
-        </p>
-
-        <form
-            action="{{ url_for('player') }}"
-            method="get"
-            class="search-form"
-        >
-            <input
-                type="text"
-                name="name"
-                placeholder="Search for a player..."
-                required
-            >
-
-            <button type="submit">Search</button>
+<nav class="navbar">
+    <a class="logo" href="/">NBA Player Analytics</a>
+    <div class="nav-links">
+        <a href="/">Home</a><a href="/compare">Compare</a><a href="/teams">Teams</a>
+    </div>
+</nav>
+<main>
+    <section class="hero">
+        <p class="eyebrow">NBA DATA, MADE SIMPLE</p>
+        <h1>Search any stored NBA player season.</h1>
+        <p class="subtext">Explore season averages, recent form, game logs, head-to-head comparisons, and team rosters.</p>
+        <form action="/player" method="get" class="search-form">
+            <input name="name" aria-label="Player name" placeholder="Try LeBron James" required>
+            <button type="submit">Search Player</button>
         </form>
-    </main>
-
-    <section class="preview-section">
-
-        <div class="preview-card">
-            <h2>Trending Players</h2>
-            <p>Coming soon</p>
-        </div>
-
-        <div class="preview-card">
-            <h2>Award Race</h2>
-            <p>Coming soon</p>
-        </div>
-
-        <section class="preview-section single-preview">
-    <a href="{{ url_for('compare') }}" class="preview-card clickable-card">
-        <h2>Compare Players</h2>
-        <p>Compare two NBA players across major statistical categories.</p>
-        <span class="preview-link">Open Compare →</span>
-    </a>
-</section>
-
     </section>
-
+    <section class="preview-section">
+        <a class="preview-card" href="/compare"><h2>Compare</h2><p>Compare two players across seven categories.</p></a>
+        <a class="preview-card" href="/teams"><h2>Teams</h2><p>Browse all 30 NBA teams and their rosters.</p></a>
+        <div class="preview-card"><h2>Reliable data</h2><p>Pages read a local database, so searches do not wait on NBA.com.</p></div>
+    </section>
+</main>
 </body>
 </html>

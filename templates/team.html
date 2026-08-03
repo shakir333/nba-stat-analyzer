@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ team.full_name }} Roster</title><link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<nav class="navbar"><a class="logo" href="/">NBA Player Analytics</a><div class="nav-links"><a href="/">Home</a><a href="/compare">Compare</a><a href="/teams">Teams</a></div></nav>
+<main class="directory-layout">
+    <header class="team-header"><img src="https://cdn.nba.com/logos/nba/{{ team.team_id }}/global/L/logo.svg" alt="{{ team.full_name }} logo"><div><a class="back-link" href="/teams">← All teams</a><h1>{{ team.full_name }}</h1><p>Current stored roster</p></div></header>
+    <section class="roster-grid">
+        {% for player in team.roster %}
+        <a class="roster-card" href="{{ url_for('player', name=player.full_name) }}">
+            <img src="https://cdn.nba.com/headshots/nba/latest/260x190/{{ player.player_id }}.png" alt="{{ player.full_name }}">
+            <div><h2>{{ player.full_name }}</h2><p>{{ player.position or '—' }} · #{{ player.jersey or '—' }}</p></div>
+        </a>
+        {% else %}<p>No roster data is stored for this team yet.</p>{% endfor %}
+    </section>
+</main>
+</body>
+</html>
